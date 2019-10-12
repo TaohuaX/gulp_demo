@@ -1,5 +1,8 @@
 // sdkasod
 console.log('我是wqe1233')
+a()
 function a () {
-    alert('woshi')
+    alert('成功manifestsucess');
+    var s = 1
+    console.log(s)
 }

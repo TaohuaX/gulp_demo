@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control" />
+    <title>Document</title>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <h1>ceshi 1111</h1>
+</body>
+<script>
+    let manifest = null
+    let qppendPageScriptContent = ''
+    const manifestUrl = `./rev/js/rev-js-manifest.json?${new Date().toTimeString()}`
+    const fetchAjaxData = function (url, dataType = 'json') {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: url,
+                type: 'GET',
+                dataType: dataType,
+                success: function (data) {
+                    resolve(data)
+                }
+            })
+        });
+    };
+    const addScript = (data) => {
+        let script = document.createElement("script");
+        script.setAttribute("type", "text/javascript");
+        script.setAttribute("id", "insert");
+        script.innerHTML = data;
+        document.body.appendChild(script);
+    }
+    async function getData() {
+        try {
+            manifest = await fetchAjaxData(manifestUrl)
+
+            // 获取manifest文件
+            if (localStorage.getItem('detail.js')) {
+                if (manifest['detail.js'] != localStorage.getItem('detail.js')) {
+                    localStorage.removeItem(localStorage.getItem('detail.js'))
+                    localStorage.setItem('detail.js', `${manifest['detail.js']}`)
+                    let scriptContent = await fetchAjaxData(`./js/${manifest['detail.js']}`, 'text')
+                    localStorage.setItem(`${manifest['detail.js']}`, scriptContent)
+                }
+            } else {
+                localStorage.setItem('detail.js', `${manifest['detail.js']}`)
+                let scriptContent = await fetchAjaxData(`./js/${manifest['detail.js']}`, 'text')
+                localStorage.setItem(`${manifest['detail.js']}`, scriptContent)
+            }
+            qppendPageScriptContent = localStorage.getItem(localStorage.getItem('detail.js'))
+            addScript(qppendPageScriptContent)
+        } catch (e) {
+            //TODO handle the exception
+        }
+    }
+    getData()
+</script>
+
+</html>
